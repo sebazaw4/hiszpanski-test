@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hiszpański B1 - nauka</title>
+  <style>
+    :root { color-scheme: light; --ink:#202124; --muted:#5f6368; --line:#d7dce2; --bg:#f7f8fa; --panel:#fff; --ok:#116b39; --bad:#9b1c1c; --accent:#1f5fbf; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial, sans-serif; color:var(--ink); background:var(--bg); }
+    header { padding:16px; border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:2; }
+    h1 { margin:0 0 10px; font-size:22px; }
+    nav { display:flex; flex-wrap:wrap; gap:8px; }
+    button, select { font:inherit; border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:6px; padding:10px 12px; cursor:pointer; }
+    button:hover { border-color:var(--accent); }
+    button.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+    main { max-width:980px; margin:0 auto; padding:18px; }
+    section { display:none; }
+    section.active { display:block; }
+    .box { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:16px; margin:0 0 14px; }
+    .row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+    .spread { display:flex; justify-content:space-between; gap:12px; align-items:center; }
+    .muted { color:var(--muted); }
+    .big { font-size:30px; line-height:1.25; margin:18px 0; }
+    .answer { font-size:22px; color:var(--accent); min-height:30px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px; }
+    .item { border:1px solid var(--line); border-radius:8px; padding:12px; background:#fff; }
+    .item b { display:block; margin-bottom:6px; }
+    .ok { color:var(--ok); font-weight:bold; }
+    .bad { color:var(--bad); font-weight:bold; }
+    .quiz-options { display:grid; gap:8px; margin:12px 0; }
+    .quiz-options button { text-align:left; }
+    table { width:100%; border-collapse:collapse; background:#fff; }
+    th, td { border:1px solid var(--line); padding:9px; text-align:left; vertical-align:top; }
+    th { background:#eef2f7; }
+    input[type="text"] { width:100%; padding:11px; font:inherit; border:1px solid var(--line); border-radius:6px; }
+    @media (max-width:600px) { main { padding:12px; } .big { font-size:24px; } .spread { display:block; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Hiszpański B1 - szybka nauka</h1>
+    <nav id="tabs"></nav>
+  </header>
+
+  <main>
+    <section id="fiszki">
+      <div class="box spread">
+        <div>
+          <b>Fiszki ze słownictwa</b>
+          <div class="muted" id="flashStats"></div>
+        </div>
+        <div class="row">
+          <select id="flashDirection">
+            <option value="es-pl">hiszpański → polski</option>
+            <option value="pl-es">polski → hiszpański</option>
+          </select>
+          <button id="resetFlash">wyczyść postęp</button>
+        </div>
+      </div>
+      <div class="box">
+        <div class="muted" id="flashTopic"></div>
+        <div class="big" id="flashFront"></div>
+        <div class="answer" id="flashBack"></div>
+        <div class="row">
+          <button id="showFlash">pokaż odpowiedź</button>
+          <button id="knownFlash">znam</button>
+          <button id="hardFlash">trudne</button>
+          <button id="nextFlash">dalej</button>
+        </div>
+        <p class="muted">Skróty: spacja - pokaż odpowiedź, Enter - znam, Backspace - trudne, strzałki - dalej.</p>
+      </div>
+    </section>
+
+    <section id="carta">
+      <div class="box">
+        <b>Carta formal</b>
+        <p class="muted">Zwroty są podzielone według części listu. Najlepiej czytać je na głos i układać z nich własny list.</p>
+      </div>
+      <div id="letterPhrases" class="grid"></div>
+    </section>
+
+    <section id="czasowniki">
+      <div class="box">
+        <b>Czasowniki biznesowe</b>
+        <p class="muted">Wpisz hiszpański czasownik do polskiego znaczenia albo po prostu przeglądaj listę.</p>
+        <div class="row">
+          <button id="verbNew">nowe pytanie</button>
+          <button id="verbCheck">sprawdź</button>
+        </div>
+        <p id="verbPrompt" class="big"></p>
+        <input id="verbInput" type="text" autocomplete="off" placeholder="wpisz po hiszpańsku">
+        <p id="verbResult"></p>
+      </div>
+      <div id="verbList" class="grid"></div>
+    </section>
+
+    <section id="subjuntivo">
+      <div class="box">
+        <b>Imperfecto de subjuntivo</b>
+        <p>Tworzenie: weź 3. osobę liczby mnogiej pretérito indefinido, odetnij <b>-ron</b> i dodaj końcówki.</p>
+        <table>
+          <tr><th>Typ</th><th>Końcówki</th><th>Przykład</th></tr>
+          <tr><td>-ar</td><td>-ara, -aras, -ara, -áramos, -arais, -aran</td><td>aceptar → aceptara</td></tr>
+          <tr><td>-er / -ir</td><td>-iera, -ieras, -iera, -iéramos, -ierais, -ieran</td><td>existir → existiera</td></tr>
+          <tr><td>nieregularne</td><td>fuera, tuviera, pudiera, hubiera</td><td>ser/ir, tener, poder, haber</td></tr>
+        </table>
+      </div>
+      <div class="box">
+        <b>Mini-test</b>
+        <p class="big" id="subQuestion"></p>
+        <div class="quiz-options" id="subOptions"></div>
+        <p id="subResult"></p>
+        <button id="subNext">następne</button>
+      </div>
+    </section>
+
+    <section id="esencial">
+      <div class="box">
+        <b>Zwroty typu „es esencial que...”</b>
+        <p class="muted">Po tych zwrotach zwykle używasz subjuntivo, gdy mówisz o konkretnej osobie lub sytuacji.</p>
+        <table>
+          <tr><th>Zwrot</th><th>Znaczenie</th><th>Przykład</th></tr>
+          <tr><td>Es fundamental que...</td><td>Kluczowe jest, aby...</td><td>Es fundamental que respetes los plazos.</td></tr>
+          <tr><td>Es imprescindible que...</td><td>Niezbędne jest, aby...</td><td>Es imprescindible que enviemos el informe.</td></tr>
+          <tr><td>Es esencial que...</td><td>Zasadnicze jest, aby...</td><td>Es esencial que escuches a la otra parte.</td></tr>
+          <tr><td>Es conveniente que...</td><td>Wskazane jest, aby...</td><td>Es conveniente que compruebes la información.</td></tr>
+          <tr><td>Es importante que...</td><td>Ważne jest, aby...</td><td>Es importante que te pongas en contacto.</td></tr>
+          <tr><td>Es necesario que...</td><td>Konieczne jest, aby...</td><td>Es necesario que introduzcas tus datos.</td></tr>
+        </table>
+      </div>
+      <div class="box">
+        <b>Ćwiczenie</b>
+        <p class="big" id="essQuestion"></p>
+        <div class="quiz-options" id="essOptions"></div>
+        <p id="essResult"></p>
+        <button id="essNext">następne</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const storeKey = "hiszpanski-b1-progress";
+    const state = JSON.parse(localStorage.getItem(storeKey) || "{}");
+    state.known ??= {};
+    state.hard ??= {};
+    state.scores ??= { subjuntivo: { ok: 0, all: 0 }, esencial: { ok: 0, all: 0 }, verbs: { ok: 0, all: 0 } };
+    let flashIndex = 0, flashShown = false, verbCurrent = null, verbAnsweredOk = false, subCurrent = null, essCurrent = null;
+
+    const tabs = [
+      ["fiszki", "Fiszki"],
+      ["carta", "Carta formal"],
+      ["czasowniki", "Czasowniki"],
+      ["subjuntivo", "Imperfecto"],
+      ["esencial", "Es esencial que"]
+    ];
+
+    const vocab = [
+      ["la acción", "akcja / udział", "finanse"], ["el banco", "bank", "finanse"], ["la bolsa", "giełda", "finanse"],
+      ["la caja de ahorros", "kasa oszczędnościowa", "finanse"], ["el cambio", "wymiana walut / reszta", "finanse"],
+      ["la cooperativa", "spółdzielnia", "finanse"], ["el crédito", "kredyt", "finanse"], ["la donación", "darowizna", "finanse"],
+      ["la entidad de crédito", "instytucja kredytowa", "finanse"], ["la financiación", "finansowanie", "finanse"],
+      ["el fondo de acciones", "fundusz akcyjny", "finanse"], ["el fondo de inversión", "fundusz inwestycyjny", "finanse"],
+      ["la fundación", "fundacja", "finanse"], ["la herencia", "spadek", "finanse"], ["la inversión", "inwestycja", "finanse"],
+      ["el microcrédito", "mikrokredyt", "finanse"], ["el patrocinio", "sponsoring / patronat", "finanse"],
+      ["la plataforma de inversión", "platforma inwestycyjna", "finanse"], ["el préstamo", "pożyczka", "finanse"],
+      ["la subvención", "dotacja / subwencja", "finanse"], ["el aval", "poręczenie / gwarancja", "bank"],
+      ["el código BIC", "kod BIC", "bank"], ["el código IBAN", "kod IBAN", "bank"], ["la cuenta", "konto / rachunek", "bank"],
+      ["la cuenta corriente", "rachunek bieżący", "bank"], ["el depósito", "depozyt / lokata", "bank"],
+      ["el dividendo", "dywidenda", "bank"], ["el extracto de cuenta", "wyciąg z konta", "bank"],
+      ["la garantía", "gwarancja", "bank"], ["el importe", "kwota / suma", "bank"], ["el interés", "odsetki / oprocentowanie", "bank"],
+      ["la moneda", "waluta / moneta", "bank"], ["el número de cuenta", "numer konta", "bank"], ["el tipo de interés", "stopa procentowa", "bank"],
+      ["la transacción comercial", "transakcja handlowa", "bank"], ["la transferencia bancaria", "przelew bankowy", "bank"],
+      ["a corto plazo", "krótkoterminowo", "biznes"], ["a largo plazo", "długoterminowo", "biznes"],
+      ["el acreedor", "wierzyciel", "biznes"], ["el balance", "bilans", "biznes"], ["los beneficios", "zyski / korzyści", "biznes"],
+      ["el cálculo", "kalkulacja / obliczenie", "biznes"], ["el capital", "kapitał", "biznes"], ["la contabilidad", "księgowość", "biznes"],
+      ["las cuentas anuales", "roczne sprawozdanie finansowe", "biznes"], ["la deuda", "dług", "biznes"],
+      ["la facturación", "fakturowanie / obrót", "biznes"], ["las ganancias", "zyski / dochody", "biznes"],
+      ["los gastos", "wydatki / koszty", "biznes"], ["la gestión financiera", "zarządzanie finansami", "biznes"],
+      ["el impuesto", "podatek", "biznes"], ["los ingresos", "przychody / wpływy", "biznes"], ["las pérdidas", "straty", "biznes"],
+      ["el plan de negocio", "biznesplan", "biznes"], ["el presupuesto", "budżet", "biznes"], ["los recursos financieros", "zasoby finansowe", "biznes"],
+      ["el acuerdo", "porozumienie / umowa", "negocjacje"], ["el proveedor", "dostawca", "negocjacje"],
+      ["el precio por unidad", "cena za sztukę", "negocjacje"], ["los plazos de entrega", "terminy dostawy", "negocjacje"],
+      ["las condiciones de pago", "warunki płatności", "negocjacje"], ["el descuento", "zniżka / rabat", "negocjacje"],
+      ["el pedido", "zamówienie", "negocjacje"], ["la mercancía", "towar", "negocjacje"], ["el rango", "ranga / stanowisko", "spotkania"],
+      ["el estatus", "status / pozycja", "spotkania"], ["el intérprete", "tłumacz ustny", "spotkania"], ["burocrático", "biurokratyczny", "spotkania"],
+      ["interrumpir", "przerywać", "spotkania"], ["la plantilla", "zespół pracowników", "firma"], ["la sucursal", "oddział firmy", "firma"],
+      ["el atuendo", "strój", "firma"], ["la jerarquía", "hierarchia", "firma"], ["la maquinaria", "maszyny", "firma"],
+      ["trato hecho", "umowa stoi", "zwroty"], ["estar al día", "być na bieżąco", "zwroty"], ["esto no me convence", "to mnie nie przekonuje", "zwroty"]
+    ];
+
+    const letter = {
+      "Saludos": [
+        ["Estimado/a Sr./Sra. [Apellido]:", "Szanowny Panie / Szanowna Pani..."],
+        ["A la atención del Director de Finanzas:", "Do wiadomości Dyrektora Finansowego..."],
+        ["Muy señor mío / Muy señora mía:", "Bardzo formalne rozpoczęcie"]
+      ],
+      "Motivo": [
+        ["Nos dirigimos a usted con el fin de...", "Zwracamy się w celu..."],
+        ["Le escribo para solicitar información sobre...", "Piszę, aby poprosić o informacje o..."],
+        ["En respuesta a su carta del...", "W odpowiedzi na Państwa list z..."],
+        ["El motivo de esta carta es presentar nuestro plan de negocio...", "Powodem listu jest przedstawienie biznesplanu..."]
+      ],
+      "Cuerpo": [
+        ["Estamos interesados en invertir en su plataforma...", "Jesteśmy zainteresowani inwestowaniem w Państwa platformę..."],
+        ["Les informamos que el tipo de interés ha cambiado...", "Informujemy, że stopa procentowa uległa zmianie..."],
+        ["Adjuntamos el balance general y las cuentas anuales...", "Załączamy bilans i roczne sprawozdanie..."],
+        ["Quisiéramos solicitar un préstamo a largo plazo...", "Chcielibyśmy wnioskować o pożyczkę długoterminową..."]
+      ],
+      "Peticiones": [
+        ["Agradecemos de antemano su atención y tiempo.", "Z góry dziękujemy za uwagę i czas."],
+        ["Le ruego que me envíe el extracto de cuenta lo antes posible.", "Proszę o szybkie przesłanie wyciągu z konta."],
+        ["Quedamos a su entera disposición para cualquier aclaración.", "Pozostajemy do dyspozycji w razie pytań."]
+      ],
+      "Despedidas": [
+        ["Atentamente,", "Z poważaniem,"],
+        ["Le saluda atentamente,", "Z poważaniem, bardziej osobiste"],
+        ["Reciba un cordial saludo,", "Serdeczne formalne pozdrowienie"]
+      ]
+    };
+
+    const verbs = [
+      ["administrar", "zarządzać"], ["organizar", "organizować"], ["gestionar", "załatwiać / zarządzać"],
+      ["dirigir", "kierować"], ["planificar", "planować"], ["controlar", "kontrolować"], ["coordinar", "koordynować"],
+      ["desarrollar", "rozwijać"], ["mejorar", "poprawiać"], ["solucionar", "rozwiązywać"], ["resolver", "rozwiązywać"],
+      ["negociar", "negocjować"], ["vender", "sprzedawać"], ["comprar", "kupować"], ["firmar", "podpisywać"],
+      ["acordar", "uzgadniać"], ["ofrecer", "oferować"], ["aceptar", "akceptować"], ["rechazar", "odrzucać"],
+      ["discutir", "dyskutować / kłócić się"], ["pactar", "zawierać układ"], ["invertir", "inwestować"],
+      ["financiar", "finansować"], ["facturar", "fakturować / osiągać obrót"], ["pagar", "płacić"], ["cobrar", "pobierać opłatę"],
+      ["calcular", "obliczać"], ["presupuestar", "ujmować w budżecie"], ["gastar", "wydawać"], ["ganar", "zarabiać / zyskiwać"],
+      ["perder", "tracić"], ["comunicar", "komunikować"], ["informar", "informować"], ["solicitar", "wnioskować / prosić formalnie"],
+      ["presentar", "prezentować"], ["atender", "obsługiwać / zajmować się"], ["colaborar", "współpracować"],
+      ["contactar", "kontaktować się"], ["convocar", "zwoływać"], ["avisar", "powiadamiać"], ["proponer", "proponować"],
+      ["trabajar", "pracować"], ["cumplir", "spełniać / dotrzymywać"], ["entregar", "dostarczać"], ["enviar", "wysyłać"],
+      ["remitir", "wysyłać formalnie"], ["recibir", "otrzymywać"], ["adjuntar", "załączać"], ["archivar", "archiwizować"],
+      ["revisar", "sprawdzać"], ["aprobar", "zatwierdzać"], ["encargarse de", "zajmować się"]
+    ];
+
+    const subQuiz = [
+      ["Me sorprendió que ellos ______ tan hospitalarios.", ["eran", "fueran", "son"], 1],
+      ["Esperé que me ______ la documentación.", ["envían", "enviaran", "enviaban"], 1],
+      ["Era importante que nosotros ______ más tiempo.", ["tuviéramos", "tenemos", "tendríamos"], 0],
+      ["Me molestaba que mis vecinos ______ ruido por la noche.", ["hacen", "hicieran", "harán"], 1],
+      ["Ojalá yo ______ en México.", ["nacía", "naciera", "nazco"], 1],
+      ["Deseaba que mis compañeros ______ en mí.", ["confiaran", "confían", "confiaron"], 0],
+      ["Me molestó que mi vecino ______ la música tan alta anoche.", ["escuchara", "escuche", "escuchaba"], 0],
+      ["No me gustó que el jefe ______ de la sala.", ["salga", "saliera", "salió"], 1],
+      ["Me pareció muy bien que ______ una cita con el gerente.", ["proponen", "propusieran", "propondrían"], 1],
+      ["Nunca pensé que los clientes le ______ tanta importancia.", ["dieran", "darían", "den"], 0]
+    ];
+
+    const essQuiz = [
+      ["Es esencial que tú ______ a la otra parte.", ["escuchas", "escuchar", "escuches"], 2],
+      ["Es necesario que ______ tus datos online.", ["introduces", "introduzcas", "introducir"], 1],
+      ["Es importante que ______ la información antes de enviarla.", ["compruebes", "compruebas", "comprobarás"], 0],
+      ["Lo mejor es que ______ en contacto con Ana María.", ["te pongas", "te pones", "ponerte"], 0],
+      ["Es esencial que ______ el código correcto.", ["utilizas", "utilices", "utilizarás"], 1],
+      ["Deseamos que el curso ______ de tu agrado.", ["es", "sea", "será"], 1],
+      ["No pienso que ______ una persona dura.", ["soy", "eres", "sea"], 2],
+      ["Lo mejor es que te ______ a nuestra agencia.", ["diriges", "dirigir", "dirijas"], 2]
+    ];
+
+    function save() { localStorage.setItem(storeKey, JSON.stringify(state)); }
+    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function norm(txt) { return txt.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+
+    function activate(id) {
+      document.querySelectorAll("section").forEach(s => s.classList.toggle("active", s.id === id));
+      document.querySelectorAll("nav button").forEach(b => b.classList.toggle("active", b.dataset.tab === id));
+      state.lastTab = id; save();
+    }
+
+    function renderTabs() {
+      const nav = document.getElementById("tabs");
+      tabs.forEach(([id, label]) => {
+        const btn = document.createElement("button");
+        btn.textContent = label;
+        btn.dataset.tab = id;
+        btn.onclick = () => activate(id);
+        nav.appendChild(btn);
+      });
+      activate(state.lastTab || "fiszki");
+    }
+
+    function updateFlashStats() {
+      const known = Object.keys(state.known).length;
+      const hard = Object.keys(state.hard).length;
+      const left = Math.max(vocab.length - known - hard, 0);
+      document.getElementById("flashStats").textContent = `znane: ${known} | trudne: ${hard} | nowe: ${left} | razem: ${vocab.length}`;
+    }
+
+    function nextFlash(preferHard = true) {
+      const hardIds = Object.keys(state.hard).map(Number);
+      const newIds = vocab.map((_, i) => i).filter(i => !state.known[i] && !state.hard[i]);
+      if (preferHard && hardIds.length && Math.random() < 0.7) {
+        flashIndex = pick(hardIds);
+      } else if (newIds.length) {
+        flashIndex = pick(newIds);
+      } else if (hardIds.length) {
+        flashIndex = pick(hardIds);
+      } else {
+        flashIndex = Math.floor(Math.random() * vocab.length);
+      }
+      flashShown = false;
+      renderFlash();
+    }
+
+    function renderFlash() {
+      const dir = document.getElementById("flashDirection").value;
+      const [es, pl, topic] = vocab[flashIndex];
+      const status = state.known[flashIndex] ? "znane" : state.hard[flashIndex] ? "trudne" : "nowe";
+      document.getElementById("flashTopic").textContent = `${topic} | ${status}`;
+      document.getElementById("flashFront").textContent = dir === "es-pl" ? es : pl;
+      document.getElementById("flashBack").textContent = flashShown ? (dir === "es-pl" ? pl : es) : "";
+      updateFlashStats();
+    }
+
+    function renderLetter() {
+      const wrap = document.getElementById("letterPhrases");
+      Object.entries(letter).forEach(([title, rows]) => {
+        const box = document.createElement("div");
+        box.className = "item";
+        box.innerHTML = `<b>${title}</b>` + rows.map(r => `<p><b>${r[0]}</b><span class="muted">${r[1]}</span></p>`).join("");
+        wrap.appendChild(box);
+      });
+    }
+
+    function newVerb() {
+      verbCurrent = pick(verbs);
+      verbAnsweredOk = false;
+      document.getElementById("verbPrompt").textContent = verbCurrent[1];
+      document.getElementById("verbInput").value = "";
+      document.getElementById("verbResult").textContent = "";
+      document.getElementById("verbInput").focus();
+    }
+
+    function checkVerb() {
+      const ok = norm(document.getElementById("verbInput").value) === norm(verbCurrent[0]);
+      state.scores.verbs.all++;
+      if (ok) state.scores.verbs.ok++;
+      verbAnsweredOk = ok;
+      document.getElementById("verbResult").innerHTML = ok ? `<span class="ok">dobrze</span>` : `<span class="bad">nie tym razem</span> - poprawnie: <b>${verbCurrent[0]}</b>`;
+      save();
+    }
+
+    function renderVerbs() {
+      document.getElementById("verbList").innerHTML = verbs.map(v => `<div class="item"><b>${v[0]}</b><span class="muted">${v[1]}</span></div>`).join("");
+      newVerb();
+    }
+
+    function renderQuiz(target, data, scoreName) {
+      const current = pick(data);
+      if (scoreName === "subjuntivo") subCurrent = current; else essCurrent = current;
+      document.getElementById(target + "Question").textContent = current[0];
+      document.getElementById(target + "Result").textContent = "";
+      const options = document.getElementById(target + "Options");
+      options.innerHTML = "";
+      current[1].forEach((txt, i) => {
+        const btn = document.createElement("button");
+        btn.textContent = txt;
+        btn.onclick = () => answerQuiz(target, scoreName, current, i);
+        options.appendChild(btn);
+      });
+    }
+
+    function answerQuiz(target, scoreName, current, i) {
+          const ok = i === current[2];
+          state.scores[scoreName].all++;
+          if (ok) state.scores[scoreName].ok++;
+          document.getElementById(target + "Result").innerHTML = ok
+            ? `<span class="ok">dobrze</span> (${state.scores[scoreName].ok}/${state.scores[scoreName].all})`
+            : `<span class="bad">źle</span> - poprawnie: <b>${current[1][current[2]]}</b> (${state.scores[scoreName].ok}/${state.scores[scoreName].all})`;
+          save();
+    }
+
+    document.getElementById("showFlash").onclick = () => { flashShown = true; renderFlash(); };
+    document.getElementById("knownFlash").onclick = () => { state.known[flashIndex] = true; delete state.hard[flashIndex]; save(); nextFlash(); };
+    document.getElementById("hardFlash").onclick = () => { state.hard[flashIndex] = true; delete state.known[flashIndex]; save(); nextFlash(false); };
+    document.getElementById("nextFlash").onclick = () => nextFlash();
+    document.getElementById("flashDirection").onchange = renderFlash;
+    document.getElementById("resetFlash").onclick = () => { state.known = {}; state.hard = {}; save(); renderFlash(); };
+    document.addEventListener("keydown", e => {
+      if (document.querySelector("section.active")?.id !== "fiszki") return;
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+      if (e.key === " ") { e.preventDefault(); flashShown = true; renderFlash(); }
+      if (e.key === "Enter") { e.preventDefault(); state.known[flashIndex] = true; delete state.hard[flashIndex]; save(); nextFlash(); }
+      if (e.key === "Backspace") { e.preventDefault(); state.hard[flashIndex] = true; delete state.known[flashIndex]; save(); nextFlash(false); }
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft" || e.key === "ArrowUp" || e.key === "ArrowDown") { e.preventDefault(); nextFlash(); }
+    });
+    document.getElementById("verbNew").onclick = newVerb;
+    document.getElementById("verbCheck").onclick = checkVerb;
+    document.getElementById("verbInput").onkeydown = e => {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      if (verbAnsweredOk) newVerb(); else checkVerb();
+    };
+    document.addEventListener("keydown", e => {
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+      const active = document.querySelector("section.active")?.id;
+      if (active === "czasowniki" && e.key === "Enter") { e.preventDefault(); verbAnsweredOk ? newVerb() : checkVerb(); }
+      if (active === "subjuntivo") {
+        if (["1", "2", "3"].includes(e.key)) { e.preventDefault(); answerQuiz("sub", "subjuntivo", subCurrent, Number(e.key) - 1); }
+        if (e.key === "Enter" || e.key.startsWith("Arrow")) { e.preventDefault(); renderQuiz("sub", subQuiz, "subjuntivo"); }
+      }
+      if (active === "esencial") {
+        if (["1", "2", "3"].includes(e.key)) { e.preventDefault(); answerQuiz("ess", "esencial", essCurrent, Number(e.key) - 1); }
+        if (e.key === "Enter" || e.key.startsWith("Arrow")) { e.preventDefault(); renderQuiz("ess", essQuiz, "esencial"); }
+      }
+    });
+    document.getElementById("subNext").onclick = () => renderQuiz("sub", subQuiz, "subjuntivo");
+    document.getElementById("essNext").onclick = () => renderQuiz("ess", essQuiz, "esencial");
+
+    renderTabs();
+    renderLetter();
+    renderVerbs();
+    nextFlash(false);
+    renderQuiz("sub", subQuiz, "subjuntivo");
+    renderQuiz("ess", essQuiz, "esencial");
+  </script>
+</body>
+</html>
