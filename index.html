@@ -68,7 +68,7 @@
           <button id="hardFlash">trudne</button>
           <button id="nextFlash">dalej</button>
         </div>
-        <p class="muted">Skróty: spacja - pokaż odpowiedź, Enter - znam, Backspace - trudne, strzałki - dalej.</p>
+        <p class="muted">Skróty: spacja - pokaż odpowiedź, Enter lub strzałka w prawo - znam, Backspace lub strzałka w lewo - trudne, góra/dół - dalej.</p>
       </div>
     </section>
 
@@ -145,7 +145,7 @@
     state.known ??= {};
     state.hard ??= {};
     state.scores ??= { subjuntivo: { ok: 0, all: 0 }, esencial: { ok: 0, all: 0 }, verbs: { ok: 0, all: 0 } };
-    let flashIndex = 0, flashShown = false, verbCurrent = null, verbAnsweredOk = false, subCurrent = null, essCurrent = null;
+    let flashIndex = 0, flashShown = false, verbCurrent = null, verbDirection = "pl-es", verbAnsweredOk = false, subCurrent = null, essCurrent = null;
 
     const tabs = [
       ["fiszki", "Fiszki"],
@@ -327,19 +327,30 @@
 
     function newVerb() {
       verbCurrent = pick(verbs);
+      verbDirection = Math.random() < 0.5 ? "pl-es" : "es-pl";
       verbAnsweredOk = false;
-      document.getElementById("verbPrompt").textContent = verbCurrent[1];
+      document.getElementById("verbPrompt").textContent = verbDirection === "pl-es" ? verbCurrent[1] : verbCurrent[0];
       document.getElementById("verbInput").value = "";
+      document.getElementById("verbInput").placeholder = verbDirection === "pl-es" ? "wpisz po hiszpańsku" : "wpisz po polsku";
       document.getElementById("verbResult").textContent = "";
       document.getElementById("verbInput").focus();
     }
 
+    function matchesAnswer(input, answer) {
+      const value = norm(input);
+      return answer.split("/").some(part => {
+        const expected = norm(part);
+        return value === expected || value.includes(expected) || expected.includes(value);
+      });
+    }
+
     function checkVerb() {
-      const ok = norm(document.getElementById("verbInput").value) === norm(verbCurrent[0]);
+      const expected = verbDirection === "pl-es" ? verbCurrent[0] : verbCurrent[1];
+      const ok = matchesAnswer(document.getElementById("verbInput").value, expected);
       state.scores.verbs.all++;
       if (ok) state.scores.verbs.ok++;
       verbAnsweredOk = ok;
-      document.getElementById("verbResult").innerHTML = ok ? `<span class="ok">dobrze</span>` : `<span class="bad">nie tym razem</span> - poprawnie: <b>${verbCurrent[0]}</b>`;
+      document.getElementById("verbResult").innerHTML = ok ? `<span class="ok">dobrze</span>` : `<span class="bad">nie tym razem</span> - poprawnie: <b>${expected}</b>`;
       save();
     }
 
@@ -383,9 +394,9 @@
       if (document.querySelector("section.active")?.id !== "fiszki") return;
       if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
       if (e.key === " ") { e.preventDefault(); flashShown = true; renderFlash(); }
-      if (e.key === "Enter") { e.preventDefault(); state.known[flashIndex] = true; delete state.hard[flashIndex]; save(); nextFlash(); }
-      if (e.key === "Backspace") { e.preventDefault(); state.hard[flashIndex] = true; delete state.known[flashIndex]; save(); nextFlash(false); }
-      if (e.key === "ArrowRight" || e.key === "ArrowLeft" || e.key === "ArrowUp" || e.key === "ArrowDown") { e.preventDefault(); nextFlash(); }
+      if (e.key === "Enter" || e.key === "ArrowRight") { e.preventDefault(); state.known[flashIndex] = true; delete state.hard[flashIndex]; save(); nextFlash(); }
+      if (e.key === "Backspace" || e.key === "ArrowLeft") { e.preventDefault(); state.hard[flashIndex] = true; delete state.known[flashIndex]; save(); nextFlash(false); }
+      if (e.key === "ArrowUp" || e.key === "ArrowDown") { e.preventDefault(); nextFlash(); }
     });
     document.getElementById("verbNew").onclick = newVerb;
     document.getElementById("verbCheck").onclick = checkVerb;
