@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hiszpanski B1 - nauka do egzaminu</title>
+  <link rel="stylesheet" href="./study-app.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Hiszpanski B1</p>
+      <h1>Nauka do egzaminu</h1>
+    </div>
+    <div class="stats" aria-label="Postep">
+      <span><strong id="statKnown">0</strong> znane</span>
+      <span><strong id="statScore">0%</strong> quiz</span>
+      <span><strong id="statStreak">0</strong> seria</span>
+      <span><strong id="statSaved">--:--</strong> zapis</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <nav class="tabs" aria-label="Tryby nauki">
+      <button class="tab active" data-view="today">Dzisiaj</button>
+      <button class="tab" data-view="flashcards">Fiszki</button>
+      <button class="tab" data-view="quiz">Quiz</button>
+      <button class="tab" data-view="grammar">Gramatyka</button>
+      <button class="tab" data-view="verbs">Czasowniki</button>
+      <button class="tab" data-view="oral">Ustny</button>
+      <button class="tab" data-view="memory">Pamiec</button>
+      <button class="tab" data-view="progress">Postep</button>
+    </nav>
+
+    <section id="today" class="view active" aria-labelledby="todayTitle">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Sesja 25 minut</p>
+          <h2 id="todayTitle">Plan na teraz</h2>
+        </div>
+        <button id="startSessionBtn" class="primary">Start sesji</button>
+      </div>
+      <div id="todayPlan" class="task-list"></div>
+      <div class="panel">
+        <h3>Szybka zasada</h3>
+        <p id="dailyRule"></p>
+      </div>
+    </section>
+
+    <section id="flashcards" class="view" aria-labelledby="flashcardsTitle">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Aktywne przypominanie</p>
+          <h2 id="flashcardsTitle">Fiszki</h2>
+        </div>
+        <select id="topicFilter" aria-label="Temat fiszek"></select>
+      </div>
+      <article class="flashcard" id="flashcard" tabindex="0">
+        <p id="cardTopic" class="pill"></p>
+        <h3 id="cardFront"></h3>
+        <p id="cardBack" class="answer hidden"></p>
+        <p id="cardExample" class="example hidden"></p>
+      </article>
+      <div class="actions">
+        <button id="showCardBtn">Pokaz odpowiedz</button>
+        <button id="saveCardMemoryBtn">Do pamieci</button>
+        <button id="againCardBtn">Jeszcze raz</button>
+        <button id="knownCardBtn" class="primary">Umiem</button>
+      </div>
+    </section>
+
+    <section id="quiz" class="view" aria-labelledby="quizTitle">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Test jak na egzaminie</p>
+          <h2 id="quizTitle">Quiz mieszany</h2>
+        </div>
+        <button id="newQuizBtn">Nowe pytanie</button>
+      </div>
+      <div class="quiz-box">
+        <p id="quizKind" class="pill"></p>
+        <h3 id="quizQuestion"></h3>
+        <div id="quizOptions" class="options"></div>
+        <div id="gapBox" class="gap-box hidden">
+          <input id="gapInput" type="text" autocomplete="off" placeholder="Wpisz odpowiedz">
+          <button id="checkGapBtn" class="primary">Sprawdz</button>
+        </div>
+        <button id="saveQuizMemoryBtn" class="hidden">Dodaj pytanie do pamieci</button>
+        <p id="quizFeedback" class="feedback" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section id="grammar" class="view" aria-labelledby="grammarTitle">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Zasady i przyklady</p>
+          <h2 id="grammarTitle">Gramatyka</h2>
+        </div>
+        <select id="grammarSelect" aria-label="Temat gramatyczny"></select>
+      </div>
+      <article id="grammarPanel" class="panel"></article>
+    </section>
+
+    <section id="verbs" class="view" aria-labelledby="verbsTitle">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Formy B1</p>
+          <h2 id="verbsTitle">Czasowniki</h2>
+        </div>
+        <select id="verbFilter" aria-label="Typ czasownika"></select>
+      </div>
+      <article class="flashcard" id="verbCard">
+        <p id="verbCategory" class="pill"></p>
+        <h3 id="verbInfinitive"></h3>
+        <p id="verbMeaning" class="answer"></p>
+        <div id="verbForms" class="verb-forms hidden"></div>
+        <p id="verbExample" class="example hidden"></p>
+      </article>
+      <div class="actions">
+        <button id="showVerbBtn">Pokaz formy</button>
+        <button id="saveVerbMemoryBtn">Do pamieci</button>
+        <button id="nextVerbBtn">Nastepny</button>
+        <button id="knownVerbBtn" class="primary">Umiem</button>
+      </div>
+      <div class="quiz-box helper-panel">
+        <p id="verbDrillKind" class="pill"></p>
+        <h3 id="verbDrillQuestion"></h3>
+        <div class="gap-box">
+          <input id="verbDrillInput" type="text" autocomplete="off" placeholder="Wpisz forme">
+          <button id="checkVerbDrillBtn" class="primary">Sprawdz</button>
+        </div>
+        <p id="verbDrillFeedback" class="feedback"></p>
+      </div>
+    </section>
+
+    <section id="oral" class="view" aria-labelledby="oralTitle">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Egzamin ustny</p>
+          <h2 id="oralTitle">Mowienie</h2>
+        </div>
+        <button id="newPromptBtn">Losuj temat</button>
+      </div>
+      <div class="panel">
+        <p id="oralTopic" class="pill"></p>
+        <h3 id="oralPrompt"></h3>
+        <textarea id="oralNotes" rows="7" placeholder="Napisz albo wklej swoja odpowiedz po hiszpansku..."></textarea>
+        <div class="actions">
+          <button id="saveOralBtn" class="primary">Zapisz notatke</button>
+          <button id="saidOralBtn">Powiedziane na glos</button>
+          <button id="showModelBtn">Pokaz model</button>
+        </div>
+        <p id="oralModel" class="model hidden"></p>
+      </div>
+      <div class="panel helper-panel">
+        <h3>Zwroty pod reka</h3>
+        <div id="oralPhrases" class="phrase-list"></div>
+      </div>
+    </section>
+
+    <section id="memory" class="view" aria-labelledby="memoryTitle">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Twoja wbudowana pamiec</p>
+          <h2 id="memoryTitle">Pamiec do powtorek</h2>
+        </div>
+        <button id="exportMemoryBtn">Eksportuj tekst</button>
+      </div>
+      <div class="grid">
+        <div class="panel">
+          <h3>Dodaj rzecz do zapamietania</h3>
+          <select id="memoryType" aria-label="Typ wpisu pamieci">
+            <option value="blad">blad</option>
+            <option value="slowo">slowo</option>
+            <option value="zdanie">zdanie</option>
+            <option value="ustny">ustny</option>
+            <option value="gramatyka">gramatyka</option>
+          </select>
+          <textarea id="memoryText" rows="6" placeholder="Np. Si fuera tu, pediria una subvencion. / Nie mylic cuando tengo z cuando tenga."></textarea>
+          <button id="saveMemoryBtn" class="primary">Zapisz w pamieci</button>
+        </div>
+        <div class="panel">
+          <h3>Powtorka z pamieci</h3>
+          <p id="memoryStats"></p>
+          <div id="memoryList" class="memory-list"></div>
+        </div>
+      </div>
+      <textarea id="memoryExport" class="hidden" rows="8" readonly></textarea>
+    </section>
+
+    <section id="progress" class="view" aria-labelledby="progressTitle">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Lokalnie w tej przegladarce</p>
+          <h2 id="progressTitle">Postep</h2>
+        </div>
+        <button id="resetBtn" class="danger">Reset</button>
+      </div>
+      <div class="grid">
+        <div class="panel">
+          <h3>Co umiesz</h3>
+          <p id="knownSummary"></p>
+        </div>
+        <div class="panel">
+          <h3>Quiz</h3>
+          <p id="quizSummary"></p>
+        </div>
+        <div class="panel">
+          <h3>Nastepny krok</h3>
+          <p id="nextStep"></p>
+        </div>
+        <div class="panel">
+          <h3>Bledy do powtorki</h3>
+          <p id="mistakeSummary"></p>
+        </div>
+        <div class="panel">
+          <h3>Pamiec postepow</h3>
+          <p id="saveSummary"></p>
+          <div id="progressLog" class="memory-list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="./app-data-vocab.js"></script>
+  <script src="./app-data-grammar.js"></script>
+  <script src="./app-data-extra.js"></script>
+  <script src="./study-app.js"></script>
+</body>
+</html>
